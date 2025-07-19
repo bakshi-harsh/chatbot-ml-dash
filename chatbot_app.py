@@ -7,37 +7,36 @@ from sklearn.model_selection import train_test_split
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
-import random
 
-# Load the dataset
+# Load dataset
 data = pd.read_csv('chatbot_dataset.csv')
 
-# Preprocess the data
+# Preprocess text
 nltk.download('punkt')
 data['Question'] = data['Question'].apply(lambda x: ' '.join(nltk.word_tokenize(x.lower())))
 
-# Split the data into training and test sets
+# Train/test split
 X_train, X_test, y_train, y_test = train_test_split(data['Question'], data['Answer'], test_size=0.2, random_state=42)
 
-# Create a model pipeline
+# Build model
 model = make_pipeline(TfidfVectorizer(), MultinomialNB())
 model.fit(X_train, y_train)
 
+# Get bot response
 def get_response(question):
     question = ' '.join(nltk.word_tokenize(question.lower()))
-    answer = model.predict([question])[0]
-    return answer
+    return model.predict([question])[0]
 
-# Initialize the Dash app
+# Initialize Dash app
 app = dash.Dash(__name__)
 
-# Define the layout
-pp.layout = html.Div(
+# App layout
+app.layout = html.Div(
     style={
         'fontFamily': 'Arial, sans-serif',
-        'backgroundColor': '#121212',
+        'backgroundColor': '#ffffff',
         'color': '#FFFFFF',
-        'backgroundImage': 'url("/assets/robot-human-hands-interacting.jpg")', 
+        'backgroundImage': 'url("/assets/robot-human-hands-interacting.jpg")',
         'backgroundSize': 'cover',
         'backgroundPosition': 'center',
         'backgroundRepeat': 'no-repeat',
@@ -55,7 +54,7 @@ pp.layout = html.Div(
             'marginBottom': '30px',
             'textShadow': '0 0 10px #00FFCC'
         }),
-        
+
         dcc.Textarea(
             id='user-input',
             value='Type your question here...',
@@ -63,18 +62,19 @@ pp.layout = html.Div(
                 'width': '100%',
                 'height': 100,
                 'padding': '15px',
-                'border': '1px solid #333',
+                'border': '1px solid #444',
                 'borderRadius': '8px',
                 'fontSize': '16px',
                 'resize': 'none',
-                'backgroundColor': '#1e1e1e',
+                'backgroundColor': 'rgba(0, 0, 0, 0.6)',
                 'color': '#FFFFFF',
-                'boxShadow': 'inset 0 1px 3px rgba(255,255,255,0.1)'
+                'boxShadow': 'inset 0 1px 3px rgba(255,255,255,0.1)',
+                'marginBottom': '20px'
             }
         ),
-        
+
         html.Button('🧠 Submit', id='submit-button', n_clicks=0, style={
-            'marginTop': '20px',
+            'marginTop': '10px',
             'padding': '10px 25px',
             'backgroundColor': '#00FFCC',
             'color': '#000',
@@ -84,7 +84,7 @@ pp.layout = html.Div(
             'cursor': 'pointer',
             'boxShadow': '0 2px 5px rgba(0,0,0,0.3)'
         }),
-        
+
         html.Div(id='chatbot-output', style={
             'padding': '20px',
             'marginTop': '30px',
@@ -98,21 +98,31 @@ pp.layout = html.Div(
     ]
 )
 
-# Define callback to update chatbot response
+# Callback for chatbot interaction
 @app.callback(
     Output('chatbot-output', 'children'),
     Input('submit-button', 'n_clicks'),
     [dash.dependencies.State('user-input', 'value')]
 )
 def update_output(n_clicks, user_input):
+    message_style = {
+        'margin': '10px',
+        'padding': '10px',
+        'borderRadius': '5px',
+        'backgroundColor': 'rgba(0, 0, 0, 0.6)',
+        'color': '#FFFFFF',
+        'border': '1px solid #444'
+    }
+
     if n_clicks > 0:
         response = get_response(user_input)
         return html.Div([
-            html.P(f"You: {user_input}", style={'margin': '10px'}),
-            html.P(f"Bot: {response}", style={'margin': '10px', 'backgroundColor': '#f0f0f0', 'padding': '10px', 'borderRadius': '5px'})
+            html.P(f"You: {user_input}", style=message_style),
+            html.P(f"Bot: {response}", style=message_style)
         ])
-    return "Ask me something!"
 
-# Run the app
+    return html.P("Ask me something!", style=message_style)
+
+# Run server
 if __name__ == '__main__':
     app.run(debug=True)
