@@ -32,16 +32,71 @@ def get_response(question):
 app = dash.Dash(__name__)
 
 # Define the layout
-app.layout = html.Div([
-    html.H1("Chatbot", style={'textAlign': 'center'}),
-    dcc.Textarea(
-        id='user-input',
-        value='Type your question here...',
-        style={'width': '100%', 'height': 100}
-    ),
-    html.Button('Submit', id='submit-button', n_clicks=0),
-    html.Div(id='chatbot-output', style={'padding': '10px'})
-])
+pp.layout = html.Div(
+    style={
+        'fontFamily': 'Arial, sans-serif',
+        'backgroundColor': '#121212',
+        'color': '#FFFFFF',
+        'backgroundImage': 'url("/assets/robot-human-hands-interacting.jpg")', 
+        'backgroundSize': 'cover',
+        'backgroundPosition': 'center',
+        'backgroundRepeat': 'no-repeat',
+        'minHeight': '100vh',
+        'padding': '40px',
+        'maxWidth': '800px',
+        'margin': 'auto',
+        'borderRadius': '12px',
+        'boxShadow': '0 0 20px rgba(0, 0, 0, 0.5)'
+    },
+    children=[
+        html.H1("🤖 AI Chatbot", style={
+            'textAlign': 'center',
+            'color': '#00FFCC',
+            'marginBottom': '30px',
+            'textShadow': '0 0 10px #00FFCC'
+        }),
+        
+        dcc.Textarea(
+            id='user-input',
+            value='Type your question here...',
+            style={
+                'width': '100%',
+                'height': 100,
+                'padding': '15px',
+                'border': '1px solid #333',
+                'borderRadius': '8px',
+                'fontSize': '16px',
+                'resize': 'none',
+                'backgroundColor': '#1e1e1e',
+                'color': '#FFFFFF',
+                'boxShadow': 'inset 0 1px 3px rgba(255,255,255,0.1)'
+            }
+        ),
+        
+        html.Button('🧠 Submit', id='submit-button', n_clicks=0, style={
+            'marginTop': '20px',
+            'padding': '10px 25px',
+            'backgroundColor': '#00FFCC',
+            'color': '#000',
+            'border': 'none',
+            'borderRadius': '6px',
+            'fontSize': '16px',
+            'cursor': 'pointer',
+            'boxShadow': '0 2px 5px rgba(0,0,0,0.3)'
+        }),
+        
+        html.Div(id='chatbot-output', style={
+            'padding': '20px',
+            'marginTop': '30px',
+            'backgroundColor': 'rgba(0, 0, 0, 0.6)',
+            'borderRadius': '8px',
+            'border': '1px solid #444',
+            'minHeight': '100px',
+            'color': '#FFFFFF',
+            'boxShadow': 'inset 0 1px 3px rgba(255,255,255,0.1)'
+        })
+    ]
+)
 
 # Define callback to update chatbot response
 @app.callback(
